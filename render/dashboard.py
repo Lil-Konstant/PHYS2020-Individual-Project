@@ -11,8 +11,9 @@ class Dashboard:
         # self.hist_initialized = False
         # self.bars = None
 
-    def update(self, state, metrics):
-        self.view.update_particles(state.positions)
+    def update(self, fluidState, brownianState, metrics):
+        self.view.updateParticles(fluidState.positions, fluidState.radius)
+        self.view.updateBrownian(brownianState.position, brownianState.radius)
 
         # self.ax_hist.clear()
         # self.ax_hist.hist(metrics["speeds"], bins=30, density=True)

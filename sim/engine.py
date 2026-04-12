@@ -1,33 +1,53 @@
 import numpy as np
+from sim.collision import handleCollisions
 
-class State:
-    def __init__(self, positions, velocities, mass):
+class FluidState:
+    def __init__(self, positions, velocities, mass, radius):
         self.positions = positions
         self.velocities = velocities
         self.mass = mass
+        self.radius = radius
         self.N = len(positions)
+
+class BrownianState:
+    def __init__(self, position, velocity, mass, radius):
+        self.position = np.array(position, dtype=float)
+        self.velocity = np.array(velocity, dtype=float)
+        self.mass = mass
+        self.radius = radius
 
 # Uses the given config dict to create N particles with random xy pos and vel
 def initialise_particles(config):
     positions = np.random.rand(config["N"], 2) * config["box_size"]
-    velocities = np.random.randn(config["N"], 2)
+    velocities = config["fluid_velocity_std"] * np.random.randn(config["N"], 2) + config["fluid_velocity_mean"]
 
     # Create a state class with the generated xy pos and vels
-    return State(positions, velocities, config["mass"])
+    return FluidState(positions, velocities, config["fluid_particle_mass"], config["fluid_particle_radius"])
+
+def initialise_brownian_particle(config):
+    return BrownianState(config["brownian_initial_position"], config["brownian_initial_velocity"], config["brownian_particle_mass"], config["brownian_particle_radius"])
 
 # Given a config and current state, compute the next euler step state over the config dt
-def timeStep(state, config):
+def timeStep(fluidState, brownianState, config):
     dt = config["dt"]
     boxSize = config["box_size"]
 
     # Update each particle pos by its v*dt
-    state.positions += state.velocities * dt
+    fluidState.positions += fluidState.velocities * dt
+    brownianState.position += brownianState.velocity * dt
+
+    handleCollisions(fluidState, brownianState)
 
     # Reflect any particles now hitting walls, in the x and y dimensions
     for dim in range(2):
         # Create a boolean mask of particles out of bounds (hitting walls)
-        mask = (state.positions[:, dim] < 0) | (state.positions[:, dim] > boxSize)
+        mask = (fluidState.positions[:, dim] < 0) | (fluidState.positions[:, dim] > boxSize)
         # Reflect the velocities of these particles hitting walls
-        state.velocities[mask, dim] *= -1
+        fluidState.velocities[mask, dim] *= -1
         # Make sure all positions are still clamped in the box size range
-        state.positions[:, dim] = np.clip(state.positions[:, dim], 0, boxSize)
+        fluidState.positions[:, dim] = np.clip(fluidState.positions[:, dim], 0, boxSize)
+
+        # Do the same for the brownian particle
+        outOfBounds = (brownianState.position[dim] < 0) | (brownianState.position[dim] > boxSize)
+        if outOfBounds:
+            brownianState.velocity[dim] *= -1

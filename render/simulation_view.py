@@ -16,9 +16,11 @@ class SimulationView:
         self.plot.setAspectLocked(True)
         self.plot.showGrid(x=True, y=True, alpha=0.2)
 
-        # Use scatter for particle display
-        self.scatter = pg.ScatterPlotItem(size=8, pen=None, brush="w")
-        self.plot.addItem(self.scatter)
+        # Use scatter for fluid and brownian display
+        self.fluidScatter = pg.ScatterPlotItem(size=8, pen=None, brush="w")
+        self.plot.addItem(self.fluidScatter)
+        self.brownianScatter = pg.ScatterPlotItem(size=12, pen=None, brush='r')
+        self.plot.addItem(self.brownianScatter)
 
         # Add boundary for box size
         rect = QtCore.QRectF(0, 0, config["box_size"], config["box_size"])
@@ -27,10 +29,25 @@ class SimulationView:
         self.border.setPen(pen)
         self.plot.addItem(self.border)
 
-    def update_particles(self, positions):
-        self.scatter.setData(
+    def updateParticles(self, positions, radii):
+        scale = self.plot.viewRange()[0][1] / self.plot.width()
+        sizes = 2 * radii / scale
+
+        self.fluidScatter.setData(
             x=positions[:, 0],
-            y=positions[:, 1]
+            y=positions[:, 1],
+            size=sizes,
+        )
+        self.app.processEvents()
+
+    def updateBrownian(self, position, radius):
+        scale = self.plot.viewRange()[0][1] / self.plot.width()
+        size = 2 * radius / scale
+
+        self.brownianScatter.setData(
+            x=[position[0]],
+            y=[position[1]],
+            size=size,
         )
         self.app.processEvents()
 
