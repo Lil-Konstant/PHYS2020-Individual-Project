@@ -1,4 +1,5 @@
 import pyqtgraph as pg
+import numpy as np
 from pyqtgraph.Qt import QtCore
 
 class SimulationView:
@@ -17,10 +18,19 @@ class SimulationView:
         self.plot.showGrid(x=True, y=True, alpha=0.2)
 
         # Use scatter for fluid and brownian display
-        self.fluidScatter = pg.ScatterPlotItem(size=8, pen=None, brush="w")
+        self.fluidScatter = pg.ScatterPlotItem(size=config["fluid_particle_radius"]*2, pen=None,
+                                               brush=pg.mkBrush(245, 66, 66, 240), pxMode=False)
         self.plot.addItem(self.fluidScatter)
-        self.brownianScatter = pg.ScatterPlotItem(size=12, pen=None, brush='r')
+        self.brownianScatter = pg.ScatterPlotItem(size=config["brownian_particle_radius"]*2, pen=None,
+                                                  brush=pg.mkBrush(222, 185, 0, 255), pxMode=False)
         self.plot.addItem(self.brownianScatter)
+
+        # Trail line
+        self.trailItem = pg.PlotDataItem(pen=pg.mkPen(0, 255, 0, 255, width=2))
+        self.plot.addItem(self.trailItem)
+        self.trailHistory = []
+        self.maxTrailPoints = 200
+        self.drawBrownianTrail = config["draw_brownian_trail"]
 
         # Add boundary for box size
         rect = QtCore.QRectF(0, 0, config["box_size"], config["box_size"])
@@ -30,25 +40,27 @@ class SimulationView:
         self.plot.addItem(self.border)
 
     def updateParticles(self, positions, radii):
-        scale = self.plot.viewRange()[0][1] / self.plot.width()
-        sizes = 2 * radii / scale
-
         self.fluidScatter.setData(
             x=positions[:, 0],
             y=positions[:, 1],
-            size=sizes,
         )
         self.app.processEvents()
 
     def updateBrownian(self, position, radius):
-        scale = self.plot.viewRange()[0][1] / self.plot.width()
-        size = 2 * radius / scale
-
         self.brownianScatter.setData(
             x=[position[0]],
             y=[position[1]],
-            size=size,
         )
+
+        # Update trail if debug is true
+        if self.drawBrownianTrail:
+            self.trailHistory.append([float(position[0]), float(position[1])])
+            if len(self.trailHistory) > self.maxTrailPoints:
+                self.trailHistory.pop(0)
+
+            trail = np.array(self.trailHistory, dtype=float)
+            self.trailItem.setData(trail[:, 0], trail[:, 1])
+
         self.app.processEvents()
 
     def close(self):
