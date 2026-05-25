@@ -1,5 +1,5 @@
 import numpy as np
-from sim.ideal_interactions import handleCollisions
+from sim.ideal_interactions import handleInteractions
 
 class FluidState:
     def __init__(self, positions, velocities, mass, radius):
@@ -19,7 +19,8 @@ class BrownianState:
 # Uses the given config dict to create N particles with random xy pos and vel
 def initialise_particles(config):
     positions = np.random.rand(config["N"], 2) * config["box_size"]
-    velocities = config["fluid_velocity_std"] * np.random.randn(config["N"], 2) + config["fluid_velocity_mean"]
+    velocities = config["fluid_velocity_std"] * np.random.randn(config["N"], 2)
+    velocities -= np.mean(velocities, axis=0) # Force a mean of 0, no bulk movement and only thermal fluctuations
 
     # Create a state class with the generated xy pos and vels
     return FluidState(positions, velocities, config["fluid_particle_mass"], config["fluid_particle_radius"])
@@ -39,7 +40,7 @@ def timeStep(fluidState, brownianState, config):
     brownianState.position += brownianState.velocity * dt
 
     # Resolve fluid-fluid and fluid-brownian collisions
-    handleCollisions(fluidState, brownianState)
+    handleInteractions(fluidState, brownianState)
 
     # Reflect any particles now hitting walls, in the x and y dimensions
     for dim in range(2):

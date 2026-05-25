@@ -6,21 +6,10 @@ class Dashboard:
     def __init__(self, config):
         self.view = SimulationView(config)
 
-        # plt.ion()
-        # self.fig_hist, self.ax_hist = plt.subplots()
-        # self.hist_initialized = False
-        # self.bars = None
-
     def update(self, fluidState, brownianState, metrics):
         self.view.updateParticles(fluidState.positions, fluidState.radius)
         self.view.updateBrownian(brownianState.position, brownianState.radius)
-
-        # self.ax_hist.clear()
-        # self.ax_hist.hist(metrics["speeds"], bins=30, density=True)
-        # self.ax_hist.set_title("Speed Distribution")
-        # self.fig_hist.canvas.draw_idle()
-        # self.fig_hist.canvas.flush_events()
-        # plt.pause(0.001)
+        self.view.updateTemperatureBox(metrics["reduced_temperature"], metrics["reduced_LJ_temperature"])
 
     def finalise(self):
         plt.ioff()

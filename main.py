@@ -1,5 +1,5 @@
 from sim.engine import timeStep, initialise_particles, initialise_brownian_particle
-from analysis.metrics import compute_metrics
+from analysis.metrics import computeFluidMetrics
 from render.dashboard import Dashboard
 from config.main_configs import TEST_CONFIG as config # Change import dict for different setups
 
@@ -17,7 +17,7 @@ def run():
         # print(state.positions[0])
 
         if t % render_every == 0:
-            dashboard.update(fluidState, brownianState, compute_metrics(fluidState)) # Update live display with new metrics and state
+            dashboard.update(fluidState, brownianState, computeFluidMetrics(fluidState)) # Update live display with new metrics and state
 
     dashboard.finalise()
 

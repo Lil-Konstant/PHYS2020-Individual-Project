@@ -39,6 +39,25 @@ class SimulationView:
         self.border.setPen(pen)
         self.plot.addItem(self.border)
 
+        # Temperature display box
+        self.temperatureBox = pg.TextItem(anchor=(0, 0), html="")
+        self.temperatureBox.setPos(0, -0.25)
+        self.plot.addItem(self.temperatureBox)
+
+    def updateTemperatureBox(self, reducedTemperature, reducedLJTemperature):
+        self.temperatureBox.setHtml(f"""
+            <div style="
+                background-color: rgba(0, 0, 0, 180);
+                color: white;
+                border: 1px solid white;
+                padding: 6px;
+                font-size: 12pt;
+            ">
+                <div>Reduced Temperature: {reducedTemperature:.3f}</div>
+                <div>Reduced LJ Temperature: {reducedLJTemperature:.3f}</div>
+            </div>
+        """)
+
     def updateParticles(self, positions, radii):
         self.fluidScatter.setData(
             x=positions[:, 0],

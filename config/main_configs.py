@@ -7,8 +7,7 @@ TEST_CONFIG = {
 
     # Properties of the fluid environment
     "fluid_is_ideal_gas": True,
-    "fluid_velocity_mean": [0,0],
-    "fluid_velocity_std": [10,10],
+    "fluid_velocity_std": [1,1],
     "fluid_particle_radius": 0.05,
     "fluid_particle_mass": 1.0,
 
@@ -20,7 +19,6 @@ TEST_CONFIG = {
     "brownian_particle_mass": 30.0,
 
     "use_LJ_potential": False,
-    
 
     # Debug and display settings
     "draw_boundary": True,
