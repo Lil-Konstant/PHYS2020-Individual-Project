@@ -34,7 +34,7 @@ def calculateFinalVelocities(position1, position2, velocity1, velocity2, mass1, 
 
     return position1_new, position2_new, velocity1_new, velocity2_new
 
-def handleCollisions(fluidState, brownianState):
+def handleInteractions(fluidState, brownianState):
     tree = KDTree(fluidState.positions)
     fluidPairIdxs = tree.query_pairs(r=2*fluidState.radius)
 

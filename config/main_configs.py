@@ -19,6 +19,9 @@ TEST_CONFIG = {
     "brownian_particle_radius": 1.0,
     "brownian_particle_mass": 30.0,
 
+    "use_LJ_potential": False,
+    
+
     # Debug and display settings
     "draw_boundary": True,
     "draw_maxwells_demon": True,

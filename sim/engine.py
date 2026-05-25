@@ -1,5 +1,5 @@
 import numpy as np
-from sim.collision import handleCollisions
+from sim.ideal_interactions import handleCollisions
 
 class FluidState:
     def __init__(self, positions, velocities, mass, radius):
