@@ -53,8 +53,8 @@ class SimulationView:
                 padding: 6px;
                 font-size: 12pt;
             ">
-                <div>Reduced Temperature: {reducedTemperature:.3f}</div>
-                <div>Reduced LJ Temperature: {reducedLJTemperature:.3f}</div>
+                <div>Reduced Temperature: {reducedTemperature:.3f} kT</div>
+                <div>Reduced LJ Temperature: {reducedLJTemperature:.3f} kT/epsilon</div>
             </div>
         """)
 

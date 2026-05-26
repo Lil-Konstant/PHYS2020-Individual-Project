@@ -1,23 +1,22 @@
-from sim.engine import timeStep, initialise_particles, initialise_brownian_particle
+from sim.engine import timeStep, initialise_fluid, initialise_brownian_particle
 from analysis.metrics import computeFluidMetrics
 from render.dashboard import Dashboard
-from config.main_configs import TEST_CONFIG as config # Change import dict for different setups
-
-render_every = 1
+from config.main_configs import TEST_CONFIG as CONFIG # Change import dict for different setups
 
 def run():
     # Use imported config dict to initialise N particles in a box
-    brownianState = initialise_brownian_particle(config)
-    fluidState = initialise_particles(config)
-    dashboard = Dashboard(config)
+    brownianState = initialise_brownian_particle(CONFIG)
+    fluidState = initialise_fluid(CONFIG)
+    dashboard = Dashboard(CONFIG)
 
     # Iterate by the config number of steps
-    for t in range(config["steps"]):
-        timeStep(fluidState, brownianState, config) # Update engine state
-        # print(state.positions[0])
+    for step in range(CONFIG["steps"]):
+        # Update engine state
+        timeStep(fluidState, brownianState, CONFIG)
 
-        if t % render_every == 0:
-            dashboard.update(fluidState, brownianState, computeFluidMetrics(fluidState)) # Update live display with new metrics and state
+        if step % CONFIG["render_every"] == 0:
+            # Update live display with new metrics and state
+            dashboard.update(fluidState, brownianState, computeFluidMetrics(fluidState, CONFIG["LJ_epsilon"]))
 
     dashboard.finalise()
 
