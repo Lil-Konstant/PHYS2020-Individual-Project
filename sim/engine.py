@@ -24,7 +24,7 @@ def initialise_fluid(config):
     fluidRadius = config["fluid_particle_radius"]
     brownianRadius = config["brownian_particle_radius"]
 
-    brownianPos = np.array(config["brownian_initial_position"], dtype=float)
+    brownianPos = np.array([config["box_size"]/2, config["box_size"]/2], dtype=float)
 
     positions = []
     maxAttemptsPerParticle = 10000
@@ -85,7 +85,7 @@ def initialise_fluid(config):
 
 def initialise_brownian_particle(config):
     return BrownianState(
-        np.array(config["brownian_initial_position"], dtype=float),
+        np.array([config["box_size"]/2, config["box_size"]/2], dtype=float),
         np.array(config["brownian_initial_velocity"], dtype=float),
         config["brownian_particle_mass"],
         config["brownian_particle_radius"]

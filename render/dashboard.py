@@ -1,4 +1,3 @@
-import matplotlib.pyplot as plt
 from render.simulation_view import SimulationView
 
 # Manages live view and analytic view
@@ -11,6 +10,8 @@ class Dashboard:
         self.view.updateBrownian(brownianState.position, brownianState.radius)
         self.view.updateTemperatureBox(metrics["reduced_temperature"], metrics["reduced_LJ_temperature"])
 
+    def plotMSD(self, brownianPositions, dt):
+        self.view.plotMSD(brownianPositions, dt)
+
     def finalise(self):
-        plt.ioff()
-        plt.show()
+        self.view.finalise()
