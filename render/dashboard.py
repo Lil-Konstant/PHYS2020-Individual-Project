@@ -10,8 +10,8 @@ class Dashboard:
         self.view.updateBrownian(brownianState.position, brownianState.radius)
         self.view.updateTemperatureBox(metrics["reduced_temperature"], metrics["reduced_LJ_temperature"])
 
-    def plotMSD(self, brownianPositions, dt):
-        self.view.plotMSD(brownianPositions, dt)
+    def plotMSD(self, brownianPositions, dt, isSquaredDisplacements=False):
+        self.view.plotMSD(brownianPositions, dt, isSquaredDisplacements)
 
     def finalise(self):
         self.view.finalise()

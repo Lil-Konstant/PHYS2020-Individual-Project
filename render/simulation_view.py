@@ -96,84 +96,59 @@ class SimulationView:
 
         self.app.processEvents()
 
-    def plotMSD(self, allBrownianPositions, dt):
+    def plotMSD(self, allBrownianPositions, dt, isSquaredDisplacements=False):
         self.msdWindow.show()
         self.msdWindow.raise_()
         self.msdWindow.activateWindow()
-
         self.msdPlot.clear()
 
         allSquaredDisplacements = []
 
         for runIdx, brownianPositions in enumerate(allBrownianPositions):
             positions = np.array(brownianPositions)
+            if len(positions) == 0: continue
 
-            if len(positions) == 0:
-                continue
+            # Convert these brownian positions to squared displacement if not already
+            if not isSquaredDisplacements:
+                initialPosition = positions[0]
+                displacements = positions - initialPosition
+                squaredDisplacements = np.sum(displacements ** 2, axis=1)
+            else:
+                squaredDisplacements = positions
 
-            initialPosition = positions[0]
-            displacements = positions - initialPosition
-
-            squaredDisplacements = np.sum(displacements ** 2, axis=1)
             allSquaredDisplacements.append(squaredDisplacements)
-
             times = np.arange(len(squaredDisplacements)) * dt
-
-            # Individual run curve
-            self.msdPlot.plot(
-                times,
-                squaredDisplacements,
-                pen=pg.mkPen((180, 180, 180, 80), width=1)
+            self.msdPlot.plot(times, squaredDisplacements, pen=pg.mkPen((180, 180, 180, 80), width=1)
             )
 
-        if len(allSquaredDisplacements) == 0:
-            return
-
-        # Convert to array: shape = (num_runs, num_steps)
-        allSquaredDisplacements = np.array(allSquaredDisplacements)
+        if len(allSquaredDisplacements) == 0: return
 
         # Average over runs
+        allSquaredDisplacements = np.array(allSquaredDisplacements)
         meanSquaredDisplacement = np.mean(allSquaredDisplacements, axis=0)
         times = np.arange(len(meanSquaredDisplacement)) * dt
 
         # Plot averaged MSD curve
-        self.msdPlot.plot(
-            times,
-            meanSquaredDisplacement,
-            pen=pg.mkPen((255, 80, 80), width=4),
-            name="Average MSD"
-        )
+        self.msdPlot.plot(times, meanSquaredDisplacement, pen=pg.mkPen((255, 80, 80), width=4), name="Average MSD")
 
         # Fit diffusion coefficient from later-time linear region
         # Avoid very early transient region
         fitStartFraction = 0.2
         fitEndFraction = 0.8
-
         startIdx = int(fitStartFraction * len(times))
         endIdx = int(fitEndFraction * len(times))
-
         fitTimes = times[startIdx:endIdx]
         fitMSD = meanSquaredDisplacement[startIdx:endIdx]
-
         slope, intercept = np.polyfit(fitTimes, fitMSD, 1)
 
-        # In 2D: MSD = 4Dt
+        # MSD = 4Dt
         D = slope / 4
 
         # Plot fitted line
         fittedMSD = slope * times + intercept
 
-        self.msdPlot.plot(
-            times,
-            fittedMSD,
-            pen=pg.mkPen((80, 180, 255), width=2, style=QtCore.Qt.PenStyle.DashLine),
-            name=f"Fit: D = {D:.4f}"
-        )
-
-        self.msdPlot.setTitle(
-            f"Brownian MSD over {len(allSquaredDisplacements)} runs | D = {D:.4f}"
-        )
-
+        self.msdPlot.plot(times, fittedMSD, pen=pg.mkPen((80, 180, 255), width=2, style=QtCore.Qt.PenStyle.DashLine), name=f"Fit: D = {D:.4f}")
+        self.msdPlot.setTitle(f"Brownian MSD over {len(allSquaredDisplacements)} runs | D = {D:.4f}")
         self.msdPlot.setLabel("bottom", "Time")
         self.msdPlot.setLabel("left", "Mean squared displacement")
         self.msdPlot.showGrid(x=True, y=True, alpha=0.3)

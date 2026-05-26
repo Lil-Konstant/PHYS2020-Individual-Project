@@ -18,7 +18,7 @@ class BrownianState:
         self.radius = radius
 
 # Uses the given config dict to create N particles with random xy pos and vel, ensures they don't overlap
-def initialise_fluid(config):
+def initialiseFluid(config):
     N = config["N"]
     boxSize = config["box_size"]
     fluidRadius = config["fluid_particle_radius"]
@@ -83,7 +83,7 @@ def initialise_fluid(config):
         fluidRadius
     )
 
-def initialise_brownian_particle(config):
+def initialiseBrownianParticle(config):
     return BrownianState(
         np.array([config["box_size"]/2, config["box_size"]/2], dtype=float),
         np.array(config["brownian_initial_velocity"], dtype=float),
@@ -103,3 +103,25 @@ def timeStep(fluidState, brownianState, config):
         handleRealInteractions(fluidState, brownianState, config)
     else:
         handleIdealInteractions(fluidState, brownianState, config)
+
+# Runs a single simulation given the config, and a random seed
+# Returns the time history of squared displacements of the brownian particle
+def runSingleSimulationSquaredDisplacement(config, seed=None):
+    # If given a seed, use it to seen numpy rand
+    if seed is not None:
+        np.random.seed(seed)
+
+    brownianState = initialiseBrownianParticle(config)
+    fluidState = initialiseFluid(config)
+    brownianPositions = []
+
+    for _ in range(config["steps"]):
+        timeStep(fluidState, brownianState, config)
+        brownianPositions.append(brownianState.position.copy())
+
+    positions = np.array(brownianPositions)
+    initialPosition = positions[0]
+    displacements = positions - initialPosition
+    squaredDisplacements = np.sum(displacements**2, axis=1)
+
+    return squaredDisplacements
