@@ -32,7 +32,7 @@ def run():
     # Otherwise don't live render, conduct the config specified number of runs in parallel, cache them for average MSD results
     numRuns = CONFIG.get("num_runs", 10)
     seeds = list(range(numRuns))
-    maxWorkers = os.cpu_count() * 2
+    maxWorkers = os.cpu_count()
 
     with ProcessPoolExecutor(max_workers=maxWorkers) as executor:
         results = list(tqdm(
@@ -42,7 +42,7 @@ def run():
 
     if plotMSD:
         dashboard = Dashboard(CONFIG)
-        dashboard.plotMSD(results, CONFIG["dt"], True)
+        dashboard.plotMSD(results, CONFIG["dt"], True, CONFIG)
         dashboard.finalise()
 
     return results

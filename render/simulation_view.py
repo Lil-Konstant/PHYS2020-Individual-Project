@@ -1,6 +1,10 @@
+import os
 import pyqtgraph as pg
 import numpy as np
 from pyqtgraph.Qt import QtCore
+import pyqtgraph.exporters as exporters
+
+SAVE_DIR = "outputs"
 
 class SimulationView:
     def __init__(self, config):
@@ -47,16 +51,20 @@ class SimulationView:
 
         # MSD plot window
         self.msdWindow = pg.GraphicsLayoutWidget(show=False, title="Brownian MSD")
-        self.msdWindow.resize(700, 500)
+        self.msdWindow.resize(800, 600)
         self.msdPlot = self.msdWindow.addPlot(
-            title="Brownian Particle Squared Displacement"
+            title="Brownian Particle Mean Squared Displacement"
         )
         self.msdCurve = self.msdPlot.plot(
             pen=pg.mkPen(width=2)
         )
         self.msdPlot.setLabel("bottom", "Time")
-        self.msdPlot.setLabel("left", "Squared displacement")
+        self.msdPlot.setLabel("left", "Mean Squared displacement")
         self.msdPlot.showGrid(x=True, y=True, alpha=0.3)
+        self.msdTemperatureBox = pg.TextItem(anchor=(0, 0), html="")
+        self.msdPlot.addItem(self.msdTemperatureBox)
+        self.msdLegend = self.msdPlot.addLegend()
+        self.msdLegend.setLabelTextSize("14pt")
 
     def updateTemperatureBox(self, reducedTemperature, reducedLJTemperature):
         self.temperatureBox.setHtml(f"""
@@ -69,6 +77,20 @@ class SimulationView:
             ">
                 <div>Reduced Temperature: {reducedTemperature:.3f} kT</div>
                 <div>Reduced LJ Temperature: {reducedLJTemperature:.3f} kT/epsilon</div>
+            </div>
+        """)
+
+    def updateMSDTemperatureBox(self, reducedTemperature, reducedLJTemperature):
+        self.msdTemperatureBox.setHtml(f"""
+            <div style="
+                background-color: rgba(0, 0, 0, 180);
+                color: white;
+                border: 1px solid white;
+                padding: 6px;
+                font-size: 12pt;
+            ">
+                <div>Reduced Temperature: {reducedTemperature:.1f} kT</div>
+                <div>Reduced LJ Temperature: {reducedLJTemperature:.1f} kT/epsilon</div>
             </div>
         """)
 
@@ -96,11 +118,12 @@ class SimulationView:
 
         self.app.processEvents()
 
-    def plotMSD(self, allBrownianPositions, dt, isSquaredDisplacements=False):
+    def plotMSD(self, allBrownianPositions, dt, isSquaredDisplacements=False, runGroupTitle="", saveFilename="", shouldSave=False):
         self.msdWindow.show()
         self.msdWindow.raise_()
         self.msdWindow.activateWindow()
         self.msdPlot.clear()
+        self.msdPlot.addItem(self.msdTemperatureBox)
 
         allSquaredDisplacements = []
 
@@ -118,7 +141,7 @@ class SimulationView:
 
             allSquaredDisplacements.append(squaredDisplacements)
             times = np.arange(len(squaredDisplacements)) * dt
-            self.msdPlot.plot(times, squaredDisplacements, pen=pg.mkPen((180, 180, 180, 80), width=1)
+            self.msdPlot.plot(times, squaredDisplacements, pen=pg.mkPen((180, 180, 180, 80), width=1, name=None)
             )
 
         if len(allSquaredDisplacements) == 0: return
@@ -133,8 +156,8 @@ class SimulationView:
 
         # Fit diffusion coefficient from later-time linear region
         # Avoid very early transient region
-        fitStartFraction = 0.2
-        fitEndFraction = 0.8
+        fitStartFraction = 0.5
+        fitEndFraction = 0.99
         startIdx = int(fitStartFraction * len(times))
         endIdx = int(fitEndFraction * len(times))
         fitTimes = times[startIdx:endIdx]
@@ -148,14 +171,34 @@ class SimulationView:
         fittedMSD = slope * times + intercept
 
         self.msdPlot.plot(times, fittedMSD, pen=pg.mkPen((80, 180, 255), width=2, style=QtCore.Qt.PenStyle.DashLine), name=f"Fit: D = {D:.4f}")
-        self.msdPlot.setTitle(f"Brownian MSD over {len(allSquaredDisplacements)} runs | D = {D:.4f}")
+        self.msdPlot.setTitle(f"Brownian MSD over {len(allSquaredDisplacements)} runs | {runGroupTitle}")
         self.msdPlot.setLabel("bottom", "Time")
         self.msdPlot.setLabel("left", "Mean squared displacement")
         self.msdPlot.showGrid(x=True, y=True, alpha=0.3)
 
+        # Fix the plot fitting to window size
+        xMin = times[0]
+        xMax = times[-1]
+        yMin = 0
+        yMax = max(np.max(meanSquaredDisplacement), np.max(allSquaredDisplacements))
+        self.msdPlot.setXRange(xMin, xMax, padding=0)
+        self.msdPlot.setYRange(yMin, yMax * 1.05, padding=0)
+        self.msdPlot.getViewBox().setDefaultPadding(0.0)
+
+        # Reposition the temperature box within the limits
+        xPos = xMin + 0.5 * (xMax - xMin)
+        yPos = yMax * 1.1 - 0.12 * (yMax * 1.05 - yMin)
+        self.msdTemperatureBox.setPos(xPos, yPos)
+
         print(f"Estimated diffusion coefficient D = {D:.6f}")
         print(f"Fit slope = {slope:.6f}")
         print(f"Fit intercept = {intercept:.6f}")
+
+        if shouldSave:
+            os.makedirs(SAVE_DIR, exist_ok=True)
+            exporter = pg.exporters.ImageExporter(self.msdPlot)
+            exporter.parameters()["width"] = 1200
+            exporter.export(SAVE_DIR + "/" + saveFilename + "_msd_plot.png")
 
         self.app.processEvents()
 

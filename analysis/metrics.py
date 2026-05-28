@@ -13,3 +13,9 @@ def computeFluidMetrics(fluidState, epsilon):
         "reduced_temperature": reducedTemperature,
         "reduced_LJ_temperature": reducedTemperature / epsilon
     }
+
+def estimateConfiguredTemperatures(config):
+    velocityStd = np.array(config["fluid_velocity_std"], dtype=float)
+    reducedTemperature = (config["fluid_particle_mass"]* np.mean(velocityStd**2))
+    reducedLJTemperature = reducedTemperature / config["LJ_epsilon"]
+    return reducedTemperature, reducedLJTemperature
