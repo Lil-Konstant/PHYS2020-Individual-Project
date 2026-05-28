@@ -7,7 +7,7 @@ TEST_CONFIG = {
     "live_render": False,
     "num_runs": 1,
     "plot_msd": True,
-    "save_plot": False,
+    "save_plot": True,
 
     # Properties of the fluid environment
     "fluid_velocity_std": [1,1],
