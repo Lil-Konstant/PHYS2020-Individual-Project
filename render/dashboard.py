@@ -31,7 +31,7 @@ class Dashboard:
         self.view.updateTemperatureBox(metrics["reduced_temperature"], metrics["reduced_LJ_temperature"])
 
     def plotMSD(self, brownianPositions, dt, isSquaredDisplacements=False, config=None):
-        if config is not None:
+        if config is not None and config["use_LJ_potential"]:
             temps = estimateConfiguredTemperatures(config)
             self.view.updateMSDTemperatureBox(*temps)
         self.view.plotMSD(brownianPositions, dt, isSquaredDisplacements, self.rungroupTitle, self.saveFilename, self.shouldSave)

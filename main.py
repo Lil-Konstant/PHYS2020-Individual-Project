@@ -4,7 +4,7 @@ from concurrent.futures import ProcessPoolExecutor
 from sim.engine import runSingleSimulationSquaredDisplacement, timeStep, initialiseFluid, initialiseBrownianParticle
 from analysis.metrics import computeFluidMetrics
 from render.dashboard import Dashboard
-from config.main_configs import TEST_CONFIG as CONFIG # Change import dict for different setups
+from config.main_configs import FUll_LJ_CONFIG_1 as CONFIG # Change import dict for different setups
 
 def run():
     liveRender = CONFIG.get("live_render", True)

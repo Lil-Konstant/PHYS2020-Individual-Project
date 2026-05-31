@@ -155,22 +155,18 @@ class SimulationView:
         self.msdPlot.plot(times, meanSquaredDisplacement, pen=pg.mkPen((255, 80, 80), width=4), name="Average MSD")
 
         # Fit diffusion coefficient from later-time linear region
-        # Avoid very early transient region
-        fitStartFraction = 0.5
-        fitEndFraction = 0.99
-        startIdx = int(fitStartFraction * len(times))
-        endIdx = int(fitEndFraction * len(times))
-        fitTimes = times[startIdx:endIdx]
-        fitMSD = meanSquaredDisplacement[startIdx:endIdx]
+        fitStartTime = 7.0
+        fitEndTime = 10.0
+        fitMask = (times >= fitStartTime) & (times <= fitEndTime)
+        fitTimes = times[fitMask]
+        fitMSD = meanSquaredDisplacement[fitMask]
         slope, intercept = np.polyfit(fitTimes, fitMSD, 1)
-
-        # MSD = 4Dt
         D = slope / 4
 
-        # Plot fitted line
-        fittedMSD = slope * times + intercept
+        # Plot Linear MSD
+        fittedMSD = slope * fitTimes + intercept
 
-        self.msdPlot.plot(times, fittedMSD, pen=pg.mkPen((80, 180, 255), width=2, style=QtCore.Qt.PenStyle.DashLine), name=f"Fit: D = {D:.4f}")
+        self.msdPlot.plot(fitTimes,fittedMSD,pen=pg.mkPen((80, 180, 255),width=2,style=QtCore.Qt.PenStyle.DashLine),name=f"Fit: D = {D:.4f}")
         self.msdPlot.setTitle(f"Brownian MSD over {len(allSquaredDisplacements)} runs | {runGroupTitle}")
         self.msdPlot.setLabel("bottom", "Time")
         self.msdPlot.setLabel("left", "Mean squared displacement")
@@ -190,6 +186,7 @@ class SimulationView:
         yPos = yMax * 1.1 - 0.12 * (yMax * 1.05 - yMin)
         self.msdTemperatureBox.setPos(xPos, yPos)
 
+        print(f"Fit window = {fitStartTime:.3f} to {fitEndTime:.3f}")
         print(f"Estimated diffusion coefficient D = {D:.6f}")
         print(f"Fit slope = {slope:.6f}")
         print(f"Fit intercept = {intercept:.6f}")
