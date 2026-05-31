@@ -68,9 +68,9 @@ DEBUG_CONFIG = {
 IDEAL_CONFIG = {
     # Simulation Settings
     "dt": 0.01,
-    "steps": 1000,
-    "box_size": 10.0,
-    "N": 1000,
+    "steps": 800,
+    "box_size": 8.0,
+    "N": 500,
     "live_render": False,
     "num_runs": 100,
     "plot_msd": True,
@@ -78,14 +78,14 @@ IDEAL_CONFIG = {
 
     # Properties of the fluid environment
     "fluid_velocity_std": [3,3],
-    "fluid_particle_radius": 0.05,
+    "fluid_particle_radius": 0.06,
     "fluid_particle_mass": 1.0,
 
     # Properties of the brownian particle
     "brownian_is_ideal_gas": True,
     "brownian_initial_velocity": [0, 0],
     "brownian_particle_radius": 0.5,
-    "brownian_particle_mass": 100.0,
+    "brownian_particle_mass": 50.0,
 
     # LJ Potential parameters
     "use_LJ_potential": False,
@@ -101,9 +101,9 @@ IDEAL_CONFIG = {
 FUll_LJ_CONFIG_1 = {
     # Simulation Settings
     "dt": 0.0005,
-    "steps": 20000, #20000
-    "box_size": 10.0,
-    "N": 1000,
+    "steps": 16000,
+    "box_size": 8.0,
+    "N": 500,
     "live_render": False,
     "num_runs": 100,
     "plot_msd": True,
@@ -111,14 +111,14 @@ FUll_LJ_CONFIG_1 = {
 
     # Properties of the fluid environment
     "fluid_velocity_std": [3,3],
-    "fluid_particle_radius": 0.05,
+    "fluid_particle_radius": 0.06,
     "fluid_particle_mass": 1.0,
 
     # Properties of the brownian particle
     "brownian_is_ideal_gas": True,
     "brownian_initial_velocity": [0, 0],
     "brownian_particle_radius": 0.5,
-    "brownian_particle_mass": 100.0,
+    "brownian_particle_mass": 50.0,
 
     # LJ Potential parameters
     "use_LJ_potential": True,
@@ -133,9 +133,9 @@ FUll_LJ_CONFIG_1 = {
 FUll_LJ_CONFIG_2 = {
     # Simulation Settings
     "dt": 0.0005,
-    "steps": 20000, #20000
-    "box_size": 10.0,
-    "N": 1000,
+    "steps": 16000,
+    "box_size": 8.0,
+    "N": 500,
     "live_render": False,
     "num_runs": 100,
     "plot_msd": True,
@@ -143,14 +143,14 @@ FUll_LJ_CONFIG_2 = {
 
     # Properties of the fluid environment
     "fluid_velocity_std": [3,3],
-    "fluid_particle_radius": 0.05,
+    "fluid_particle_radius": 0.06,
     "fluid_particle_mass": 1.0,
 
     # Properties of the brownian particle
     "brownian_is_ideal_gas": True,
     "brownian_initial_velocity": [0, 0],
     "brownian_particle_radius": 0.5,
-    "brownian_particle_mass": 100.0,
+    "brownian_particle_mass": 50.0,
 
     # LJ Potential parameters
     "use_LJ_potential": True,
@@ -165,9 +165,9 @@ FUll_LJ_CONFIG_2 = {
 FUll_LJ_CONFIG_3 = {
     # Simulation Settings
     "dt": 0.0005,
-    "steps": 20000, #20000
-    "box_size": 10.0,
-    "N": 1000,
+    "steps": 16000,
+    "box_size": 8.0,
+    "N": 500,
     "live_render": False,
     "num_runs": 100,
     "plot_msd": True,
@@ -175,14 +175,14 @@ FUll_LJ_CONFIG_3 = {
 
     # Properties of the fluid environment
     "fluid_velocity_std": [3,3],
-    "fluid_particle_radius": 0.05,
+    "fluid_particle_radius": 0.06,
     "fluid_particle_mass": 1.0,
 
     # Properties of the brownian particle
     "brownian_is_ideal_gas": True,
     "brownian_initial_velocity": [0, 0],
     "brownian_particle_radius": 0.5,
-    "brownian_particle_mass": 100.0,
+    "brownian_particle_mass": 50.0,
 
     # LJ Potential parameters
     "use_LJ_potential": True,
@@ -197,9 +197,9 @@ FUll_LJ_CONFIG_3 = {
 FUll_LJ_CONFIG_4 = {
     # Simulation Settings
     "dt": 0.0005,
-    "steps": 20000, #20000
-    "box_size": 10.0,
-    "N": 1000,
+    "steps": 16000,
+    "box_size": 8.0,
+    "N": 500,
     "live_render": False,
     "num_runs": 100,
     "plot_msd": True,
@@ -207,14 +207,14 @@ FUll_LJ_CONFIG_4 = {
 
     # Properties of the fluid environment
     "fluid_velocity_std": [3,3],
-    "fluid_particle_radius": 0.05,
+    "fluid_particle_radius": 0.06,
     "fluid_particle_mass": 1.0,
 
     # Properties of the brownian particle
     "brownian_is_ideal_gas": True,
     "brownian_initial_velocity": [0, 0],
     "brownian_particle_radius": 0.5,
-    "brownian_particle_mass": 100.0,
+    "brownian_particle_mass": 50.0,
 
     # LJ Potential parameters
     "use_LJ_potential": True,
@@ -229,9 +229,9 @@ FUll_LJ_CONFIG_4 = {
 FUll_LJ_CONFIG_5 = {
     # Simulation Settings
     "dt": 0.0005,
-    "steps": 20000, #20000
-    "box_size": 10.0,
-    "N": 1000,
+    "steps": 16000,
+    "box_size": 8.0,
+    "N": 500,
     "live_render": False,
     "num_runs": 100,
     "plot_msd": True,
@@ -239,14 +239,14 @@ FUll_LJ_CONFIG_5 = {
 
     # Properties of the fluid environment
     "fluid_velocity_std": [3,3],
-    "fluid_particle_radius": 0.05,
+    "fluid_particle_radius": 0.06,
     "fluid_particle_mass": 1.0,
 
     # Properties of the brownian particle
     "brownian_is_ideal_gas": True,
     "brownian_initial_velocity": [0, 0],
     "brownian_particle_radius": 0.5,
-    "brownian_particle_mass": 100.0,
+    "brownian_particle_mass": 50.0,
 
     # LJ Potential parameters
     "use_LJ_potential": True,
@@ -261,9 +261,9 @@ FUll_LJ_CONFIG_5 = {
 FUll_LJ_CONFIG_6 = {
     # Simulation Settings
     "dt": 0.0005,
-    "steps": 20000, #20000
-    "box_size": 10.0,
-    "N": 1000,
+    "steps": 16000,
+    "box_size": 8.0,
+    "N": 500,
     "live_render": False,
     "num_runs": 100,
     "plot_msd": True,
@@ -271,18 +271,147 @@ FUll_LJ_CONFIG_6 = {
 
     # Properties of the fluid environment
     "fluid_velocity_std": [3,3],
-    "fluid_particle_radius": 0.05,
+    "fluid_particle_radius": 0.06,
     "fluid_particle_mass": 1.0,
 
     # Properties of the brownian particle
     "brownian_is_ideal_gas": True,
     "brownian_initial_velocity": [0, 0],
     "brownian_particle_radius": 0.5,
-    "brownian_particle_mass": 100.0,
+    "brownian_particle_mass": 50.0,
 
     # LJ Potential parameters
     "use_LJ_potential": True,
     "use_LJ_for_brownian_to_fluid": True,
+    "LJ_epsilon": 9/8, # 8 kT/e
+
+    # Render Settings - for when Live render is true
+    "render_every": 10,
+    "draw_boundary": True,
+    "draw_brownian_trail": True,
+}
+FUll_LJ_CONFIG_7 = {
+    # Simulation Settings
+    "dt": 0.0005,
+    "steps": 16000,
+    "box_size": 8.0,
+    "N": 500,
+    "live_render": False,
+    "num_runs": 100,
+    "plot_msd": True,
+    "save_plot": True,
+
+    # Properties of the fluid environment
+    "fluid_velocity_std": [3,3],
+    "fluid_particle_radius": 0.06,
+    "fluid_particle_mass": 1.0,
+
+    # Properties of the brownian particle
+    "brownian_is_ideal_gas": True,
+    "brownian_initial_velocity": [0, 0],
+    "brownian_particle_radius": 0.5,
+    "brownian_particle_mass": 50.0,
+
+    # LJ Potential parameters
+    "use_LJ_potential": True,
+    "use_LJ_for_brownian_to_fluid": True,
+    "LJ_epsilon": 9/16, # 16 kT/e
+
+    # Render Settings - for when Live render is true
+    "render_every": 10,
+    "draw_boundary": True,
+    "draw_brownian_trail": True,
+}
+
+HALF_LJ_CONFIG_1 = {
+    # Simulation Settings
+    "dt": 0.0005,
+    "steps": 16000,
+    "box_size": 8.0,
+    "N": 500,
+    "live_render": False,
+    "num_runs": 100,
+    "plot_msd": True,
+    "save_plot": True,
+
+    # Properties of the fluid environment
+    "fluid_velocity_std": [3,3],
+    "fluid_particle_radius": 0.06,
+    "fluid_particle_mass": 1.0,
+
+    # Properties of the brownian particle
+    "brownian_is_ideal_gas": True,
+    "brownian_initial_velocity": [0, 0],
+    "brownian_particle_radius": 0.5,
+    "brownian_particle_mass": 50.0,
+
+    # LJ Potential parameters
+    "use_LJ_potential": True,
+    "use_LJ_for_brownian_to_fluid": False,
+    "LJ_epsilon": 9*4, # 8 kT/e
+
+    # Render Settings - for when Live render is true
+    "render_every": 10,
+    "draw_boundary": True,
+    "draw_brownian_trail": True,
+}
+HALF_LJ_CONFIG_2 = {
+    # Simulation Settings
+    "dt": 0.0005,
+    "steps": 16000,
+    "box_size": 8.0,
+    "N": 500,
+    "live_render": False,
+    "num_runs": 100,
+    "plot_msd": True,
+    "save_plot": True,
+
+    # Properties of the fluid environment
+    "fluid_velocity_std": [3,3],
+    "fluid_particle_radius": 0.06,
+    "fluid_particle_mass": 1.0,
+
+    # Properties of the brownian particle
+    "brownian_is_ideal_gas": True,
+    "brownian_initial_velocity": [0, 0],
+    "brownian_particle_radius": 0.5,
+    "brownian_particle_mass": 50.0,
+
+    # LJ Potential parameters
+    "use_LJ_potential": True,
+    "use_LJ_for_brownian_to_fluid": False,
+    "LJ_epsilon": 9, # 1 kT/e
+
+    # Render Settings - for when Live render is true
+    "render_every": 10,
+    "draw_boundary": True,
+    "draw_brownian_trail": True,
+}
+HALF_LJ_CONFIG_3 = {
+    # Simulation Settings
+    "dt": 0.0005,
+    "steps": 16000,
+    "box_size": 8.0,
+    "N": 500,
+    "live_render": False,
+    "num_runs": 100,
+    "plot_msd": True,
+    "save_plot": True,
+
+    # Properties of the fluid environment
+    "fluid_velocity_std": [3,3],
+    "fluid_particle_radius": 0.06,
+    "fluid_particle_mass": 1.0,
+
+    # Properties of the brownian particle
+    "brownian_is_ideal_gas": True,
+    "brownian_initial_velocity": [0, 0],
+    "brownian_particle_radius": 0.5,
+    "brownian_particle_mass": 50.0,
+
+    # LJ Potential parameters
+    "use_LJ_potential": True,
+    "use_LJ_for_brownian_to_fluid": False,
     "LJ_epsilon": 9/8, # 8 kT/e
 
     # Render Settings - for when Live render is true
