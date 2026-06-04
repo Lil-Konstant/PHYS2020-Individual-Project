@@ -3,6 +3,10 @@ from sim.ideal_interactions import handleInteractions as handleIdealInteractions
 from sim.real_interactions import handleInteractions as handleRealInteractions
 
 class FluidState:
+    """
+    Uses a list for [x,y] positions and [vx, vy] velocities, each row (first index) corresponds to a particles data.
+    Stores mass and radius shared by fluid particles, and number of them
+    """
     def __init__(self, positions, velocities, mass, radius):
         self.positions = positions
         self.velocities = velocities
@@ -11,6 +15,9 @@ class FluidState:
         self.N = len(positions)
 
 class BrownianState:
+    """
+    Stores position as [x,y] and velocity as [vx, vy].
+    """
     def __init__(self, position, velocity, mass, radius):
         self.position = np.array(position, dtype=float)
         self.velocity = np.array(velocity, dtype=float)
@@ -19,11 +26,17 @@ class BrownianState:
 
 # Uses the given config dict to create N particles with random xy pos and vel, ensures they don't overlap
 def initialiseFluid(config):
+    """
+    Initialises a fluid of N particles, tracked by a FluidState class, uses config for fluid size, number and placement
+    :param config:
+    :return:
+    """
     N = config["N"]
     boxSize = config["box_size"]
     fluidRadius = config["fluid_particle_radius"]
     brownianRadius = config["brownian_particle_radius"]
 
+    # Store where the brownian will be to avoid placing overlap
     brownianPos = np.array([config["box_size"]/2, config["box_size"]/2], dtype=float)
 
     positions = []
@@ -33,22 +46,19 @@ def initialiseFluid(config):
     minFluidFluidDist = 2 * fluidRadius
     minBrownianFluidDist = brownianRadius + fluidRadius
 
+    # For each particle, keep trying to find a position to place that isn't already occupied
     for _ in range(N):
-        placed = False
-
         for _ in range(maxAttemptsPerParticle):
             candidate = np.random.rand(2) * boxSize
 
             # Keep fluid particle fully inside box
             if np.any(candidate < fluidRadius):
                 continue
-
             if np.any(candidate > boxSize - fluidRadius):
                 continue
 
             # Keep fluid particle outside Brownian particle
             distToBrownian = np.linalg.norm(candidate - brownianPos)
-
             if distToBrownian < minBrownianFluidDist:
                 continue
 
@@ -60,15 +70,9 @@ def initialiseFluid(config):
                 if np.any(distances < minFluidFluidDist):
                     continue
 
+            # If all checks are passed, place this particle here
             positions.append(candidate)
-            placed = True
             break
-
-        if not placed:
-            raise RuntimeError(
-                "Could not place all particles without overlap. "
-                "Try reducing N, reducing particle radii, or increasing box_size."
-            )
 
     positions = np.array(positions)
     velocities = config["fluid_velocity_std"] * np.random.randn(N, 2)
@@ -91,8 +95,11 @@ def initialiseBrownianParticle(config):
         config["brownian_particle_radius"]
     )
 
-# Given a config and current state, compute the next euler step state over the config dt
 def timeStep(fluidState, brownianState, config):
+    """
+    Given a config and current state, compute the next euler step state over the config dt. Conduct particle interactions
+    based on if ideal or non-ideal.
+    """
     dt = config["dt"]
 
     # Update each particle pos by its v*dt
@@ -107,7 +114,11 @@ def timeStep(fluidState, brownianState, config):
 # Runs a single simulation given the config, and a random seed
 # Returns the time history of squared displacements of the brownian particle
 def runSingleSimulationSquaredDisplacement(config, seed=None):
-    # If given a seed, use it to seen numpy rand
+    """
+    # Runs a single simulation given the config, and a random seed. Returns the time history of squared displacements
+    of the brownian particle
+    """
+    # If given a seed, use it to seed numpy rand
     if seed is not None:
         np.random.seed(seed)
 

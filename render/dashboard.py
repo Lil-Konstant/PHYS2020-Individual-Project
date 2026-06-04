@@ -4,11 +4,14 @@ from analysis.metrics import estimateConfiguredTemperatures
 RUNGROUP_TITLES = ["Ideal Fluid & Ideal Brownian", "LJ Fluid & Ideal Brownian", "LJ Fluid & LJ Brownian"]
 SAVE_FILENAMES = ["Ideal", "Partial-LJ", "Full-LJ"]
 
-# Manages live view and analytic view
 class Dashboard:
+    """
+    Manages the simulation view, wrapper class for updating live view as well as plot views
+    """
     def __init__(self, config):
         self.view = SimulationView(config)
 
+        # Set run group title and savefile name based on given config, for plot title and saving
         rungroupTitle = ""
         saveFilename = ""
         if config["use_LJ_potential"] and config["use_LJ_for_brownian_to_fluid"]:

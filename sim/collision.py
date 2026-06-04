@@ -5,7 +5,11 @@ def checkOverlap(position1, position2, radius1, radius2):
 
 # Reflects fluid and brownian particles off of boundary walls elastically
 def handleBoundaries(fluidState, brownianState, boxSize):
-    # Reflect any particles now hitting walls, in the x and y dimensions
+    """
+    Reflects fluid particles and brownian off of walls if within particle radius and approaching.
+    """
+
+    # Separate into x and y checks
     for dim in range(2):
         # Create a boolean mask of particles out of bounds (hitting walls)
         mask = (fluidState.positions[:, dim] - fluidState.radius  < 0) | (fluidState.positions[:, dim] + fluidState.radius > boxSize)
@@ -20,6 +24,10 @@ def handleBoundaries(fluidState, brownianState, boxSize):
             brownianState.velocity[dim] *= -1
 
 def calculateFinalVelocities(position1, position2, velocity1, velocity2, mass1, mass2, radius1, radius2):
+    """
+    Used by ideal_interactions to find v'1 and v'2 of two particles by using their collision normals.
+    """
+
     r = position1 - position2
     dist = np.linalg.norm(r)
 
@@ -49,8 +57,11 @@ def calculateFinalVelocities(position1, position2, velocity1, velocity2, mass1, 
 
     return position1_new, position2_new, velocity1_new, velocity2_new
 
-# Ideal collisions between the brownian particle and all overlapping fluid particles
 def performBrownianToFluidCollisions(fluidState, brownianState):
+    """
+    Performs ideal collisions between the brownian particle and all overlapping fluid particles.
+    """
+
     for i in range(fluidState.N):
         if checkOverlap(brownianState.position, fluidState.positions[i], brownianState.radius, fluidState.radius):
             brownianState.position, fluidState.positions[i], brownianState.velocity, fluidState.velocities[i] = (

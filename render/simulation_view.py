@@ -10,6 +10,7 @@ class SimulationView:
     def __init__(self, config):
         self.app = pg.mkQApp("Thermal Simulation")
 
+        # If live render is true, create a plot and screen for particle display during runtime
         if config.get("live_render", True):
             # Window and plot area
             self.win = pg.GraphicsLayoutWidget(show=True, title="Thermal Simulation")
@@ -23,21 +24,19 @@ class SimulationView:
             self.plot.showGrid(x=True, y=True, alpha=0.2)
 
             # Use scatter for fluid and brownian display
-            self.fluidScatter = pg.ScatterPlotItem(size=config["fluid_particle_radius"]*2, pen=None,
-                                                   brush=pg.mkBrush(245, 66, 66, 240), pxMode=False)
+            self.fluidScatter = pg.ScatterPlotItem(size=config["fluid_particle_radius"]*2, pen=None, brush=pg.mkBrush(245, 66, 66, 240), pxMode=False)
             self.plot.addItem(self.fluidScatter)
-            self.brownianScatter = pg.ScatterPlotItem(size=config["brownian_particle_radius"]*2, pen=None,
-                                                      brush=pg.mkBrush(222, 185, 0, 255), pxMode=False)
+            self.brownianScatter = pg.ScatterPlotItem(size=config["brownian_particle_radius"]*2, pen=None, brush=pg.mkBrush(222, 185, 0, 255), pxMode=False)
             self.plot.addItem(self.brownianScatter)
 
-            # Trail line
+            # Trail line for brownian particle movement
             self.trailItem = pg.PlotDataItem(pen=pg.mkPen(0, 255, 0, 255, width=2))
             self.plot.addItem(self.trailItem)
             self.trailHistory = []
             self.maxTrailPoints = 200
             self.drawBrownianTrail = config["draw_brownian_trail"]
 
-            # Add boundary for box size
+            # Add visible boundary for box extents
             rect = QtCore.QRectF(0, 0, config["box_size"], config["box_size"])
             pen = pg.mkPen(color='r', width=2)
             self.border = pg.QtWidgets.QGraphicsRectItem(rect)
@@ -52,12 +51,8 @@ class SimulationView:
         # MSD plot window
         self.msdWindow = pg.GraphicsLayoutWidget(show=False, title="Brownian MSD")
         self.msdWindow.resize(800, 600)
-        self.msdPlot = self.msdWindow.addPlot(
-            title="Brownian Particle Mean Squared Displacement"
-        )
-        self.msdCurve = self.msdPlot.plot(
-            pen=pg.mkPen(width=2)
-        )
+        self.msdPlot = self.msdWindow.addPlot(title="Brownian Particle Mean Squared Displacement")
+        self.msdCurve = self.msdPlot.plot(pen=pg.mkPen(width=2))
         self.msdPlot.setLabel("bottom", "Time")
         self.msdPlot.setLabel("left", "Mean Squared displacement")
         self.msdPlot.showGrid(x=True, y=True, alpha=0.3)
@@ -67,6 +62,9 @@ class SimulationView:
         self.msdLegend.setLabelTextSize("14pt")
 
     def updateTemperatureBox(self, reducedTemperature, reducedLJTemperature):
+        """
+        Adds temperature box to live display window
+        """
         self.temperatureBox.setHtml(f"""
             <div style="
                 background-color: rgba(0, 0, 0, 180);
@@ -81,6 +79,9 @@ class SimulationView:
         """)
 
     def updateMSDTemperatureBox(self, reducedTemperature, reducedLJTemperature):
+        """
+        Adds temperature box to MSD plot
+        """
         self.msdTemperatureBox.setHtml(f"""
             <div style="
                 background-color: rgba(0, 0, 0, 180);
@@ -94,18 +95,18 @@ class SimulationView:
             </div>
         """)
 
-    def updateParticles(self, positions, radii):
-        self.fluidScatter.setData(
-            x=positions[:, 0],
-            y=positions[:, 1],
-        )
+    def updateParticles(self, positions):
+        """
+        Update the fluid scatter plot
+        """
+        self.fluidScatter.setData(x=positions[:, 0], y=positions[:, 1],)
         self.app.processEvents()
 
-    def updateBrownian(self, position, radius):
-        self.brownianScatter.setData(
-            x=[position[0]],
-            y=[position[1]],
-        )
+    def updateBrownian(self, position):
+        """
+        Update the brownian scatter plot, draw trail if set to.
+        """
+        self.brownianScatter.setData(x=[position[0]], y=[position[1]],)
 
         # Update trail if debug is true
         if self.drawBrownianTrail:
@@ -119,6 +120,12 @@ class SimulationView:
         self.app.processEvents()
 
     def plotMSD(self, allBrownianPositions, dt, isSquaredDisplacements=False, runGroupTitle="", saveFilename="", shouldSave=False):
+        """
+        Given a list of lists brownian positions either as squared displacements or just positions, plot each list using
+        dt as the range of time values. If not already in squared distance form, puts it into this form. Then calculates
+        the mean squared distance of all of these lists and plots it in red. Also fits a diffusion coefficient given
+        a fixed time window of linearity and plots this as a blue dotted line. Saves to output directory if shouldSave.
+        """
         self.msdWindow.show()
         self.msdWindow.raise_()
         self.msdWindow.activateWindow()
@@ -126,7 +133,6 @@ class SimulationView:
         self.msdPlot.addItem(self.msdTemperatureBox)
 
         allSquaredDisplacements = []
-
         for runIdx, brownianPositions in enumerate(allBrownianPositions):
             positions = np.array(brownianPositions)
             if len(positions) == 0: continue
@@ -141,8 +147,7 @@ class SimulationView:
 
             allSquaredDisplacements.append(squaredDisplacements)
             times = np.arange(len(squaredDisplacements)) * dt
-            self.msdPlot.plot(times, squaredDisplacements, pen=pg.mkPen((180, 180, 180, 80), width=1, name=None)
-            )
+            self.msdPlot.plot(times, squaredDisplacements, pen=pg.mkPen((180, 180, 180, 80), width=1, name=None))
 
         if len(allSquaredDisplacements) == 0: return
 
@@ -155,8 +160,8 @@ class SimulationView:
         self.msdPlot.plot(times, meanSquaredDisplacement, pen=pg.mkPen((255, 80, 80), width=4), name="Average MSD")
 
         # Fit diffusion coefficient from later-time linear region
-        fitStartTime = 7.0
-        fitEndTime = 10.0
+        fitStartTime = 2.0
+        fitEndTime = 5.0
         fitMask = (times >= fitStartTime) & (times <= fitEndTime)
         fitTimes = times[fitMask]
         fitMSD = meanSquaredDisplacement[fitMask]
@@ -165,7 +170,6 @@ class SimulationView:
 
         # Plot Linear MSD
         fittedMSD = slope * fitTimes + intercept
-
         self.msdPlot.plot(fitTimes,fittedMSD,pen=pg.mkPen((80, 180, 255),width=2,style=QtCore.Qt.PenStyle.DashLine),name=f"Fit: D = {D:.4f}")
         self.msdPlot.setTitle(f"Brownian MSD over {len(allSquaredDisplacements)} runs | {runGroupTitle}")
         self.msdPlot.setLabel("bottom", "Time")
@@ -185,11 +189,6 @@ class SimulationView:
         xPos = xMin + 0.5 * (xMax - xMin)
         yPos = yMax * 1.1 - 0.12 * (yMax * 1.05 - yMin)
         self.msdTemperatureBox.setPos(xPos, yPos)
-
-        print(f"Fit window = {fitStartTime:.3f} to {fitEndTime:.3f}")
-        print(f"Estimated diffusion coefficient D = {D:.6f}")
-        print(f"Fit slope = {slope:.6f}")
-        print(f"Fit intercept = {intercept:.6f}")
 
         if shouldSave:
             os.makedirs(SAVE_DIR, exist_ok=True)

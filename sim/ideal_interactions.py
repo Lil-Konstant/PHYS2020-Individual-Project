@@ -2,6 +2,10 @@ from scipy.spatial import KDTree
 from sim.collision import handleBoundaries, calculateFinalVelocities, performBrownianToFluidCollisions
 
 def handleInteractions(fluidState, brownianState, config):
+    """
+    Called by the engine, spatial partitions the fluid based on fluid radius for collision range, conducts ideal
+    reflection for colliding particles and updates velocities. Reflects any objects off of boundaries.
+    """
     boxSize = config["box_size"]
 
     tree = KDTree(fluidState.positions)
